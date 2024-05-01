@@ -16,8 +16,8 @@ public class AtlassianController {
     private AtlassianService atlassianService;
 
     @GetMapping("")
-    public List<String> sync() {
-        return atlassianService.ingestContent();
+    public void sync() {
+        atlassianService.ingestContent();
     }
 
 }

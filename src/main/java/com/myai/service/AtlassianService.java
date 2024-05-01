@@ -1,14 +1,12 @@
 package com.myai.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.JsonNode;
 import com.myai.connector.AtlassianConnector;
 import com.myai.constants.MyAiConstants;
 import dev.langchain4j.data.document.Document;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.ai.vectorsore.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +15,7 @@ import java.util.*;
 import static com.myai.constants.MyAiConstants.*;
 
 @Service
+@Slf4j
 public class AtlassianService {
 
     @Autowired
@@ -28,14 +27,17 @@ public class AtlassianService {
     @Autowired
     private IngestService ingestService;
 
-    public List<String> ingestContent() {
+    public void ingestContent() {
         JsonNode atlassianResponse = atlassianConnector.getAtlassianResponse(MyAiConstants.PAGES_BASE_URL, null);
         List<String> allPageIds = getAllPageIds(atlassianResponse);
-        return ingestPages(allPageIds);
+        log.info("Total pages count: {}", allPageIds.size());
+        ingestPages(allPageIds);
+        log.info("Successfully completed ingestion");
     }
 
     private List<String> getAllPageIds(JsonNode atlassianResponse) {
-        JSONArray results = atlassianResponse.getObject().getJSONArray(MyAiConstants.RESULTS);
+        if (!atlassianResponse.getObject().has(MyAiConstants.RESULTS)) return Collections.emptyList();
+        JSONArray results = atlassianResponse.getObject().getJSONArray(RESULTS);
         List<String> ids = new ArrayList<>();
         for (var resultObj : results) {
             JSONObject result = (JSONObject) resultObj;
@@ -44,8 +46,7 @@ public class AtlassianService {
         return ids;
     }
 
-    private List<String> ingestPages(List<String> allPageIds) {
-        List<String> totalPages = new ArrayList<>();
+    private void ingestPages(List<String> allPageIds) {
         for (String id : allPageIds) {
             String pageById = MyAiConstants.PAGES_BASE_URL + "/" + id;
             Map<String, Object> queryParams = Map.of(MyAiConstants.BODY_FORMAT, MyAiConstants.ATLAS_DOC_FORMAT);
@@ -53,9 +54,8 @@ public class AtlassianService {
             JSONObject fields = extractRequiredFields(atlassianResponse);
             List<Document> documents = pageService.extractContent(fields);
             ingestService.ingestDocuments(documents);
-            totalPages.add(documents.toString());
+            log.info("Completed ingesting page: {}", id);
         }
-        return totalPages;
     }
 
     private JSONObject extractRequiredFields(JsonNode atlassianResponse) {

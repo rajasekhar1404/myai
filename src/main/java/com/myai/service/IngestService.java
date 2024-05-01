@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chroma.ChromaApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -21,9 +20,7 @@ public class IngestService {
 
     public void ingestDocuments(List<Document> documents) {
         try {
-            log.info("Started ingesting documents at: {}", new Date());
             embeddingStoreIngestor.ingest(documents);
-            log.info("Successfully completed ingestion");
         } catch (Exception ex) {
             log.error("Exception while ingesting documents: {}", ex.getMessage());
         }
