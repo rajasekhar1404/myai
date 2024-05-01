@@ -51,7 +51,7 @@ public class ModelConfig {
     }
 
     @Bean
-    public ChromaEmbeddingStore chromaEmbeddingStore() {
+    public ChromaEmbeddingStore embeddingStore() {
         return new ChromaEmbeddingStore(vectorBaseUrl, collectionName, Duration.ofMinutes(10));
     }
 
@@ -60,7 +60,7 @@ public class ModelConfig {
         return EmbeddingStoreIngestor.builder()
                 .documentSplitter(DocumentSplitters.recursive(300, 10))
                 .embeddingModel(embeddingModel())
-                .embeddingStore(chromaEmbeddingStore())
+                .embeddingStore(embeddingStore())
                 .build();
     }
 
@@ -68,7 +68,7 @@ public class ModelConfig {
     public CustomAiService aiService() {
         return AiServices.builder(CustomAiService.class)
                 .streamingChatLanguageModel(languageModel())
-                .contentRetriever(new EmbeddingStoreContentRetriever(chromaEmbeddingStore(), embeddingModel()))
+                .contentRetriever(new EmbeddingStoreContentRetriever(embeddingStore(), embeddingModel()))
                 .chatMemory(MessageWindowChatMemory.builder().maxMessages(20).build())
                 .build();
     }
