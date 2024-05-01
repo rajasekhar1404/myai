@@ -3,7 +3,7 @@
 - Open Termux and update all apps: `apt update && apt upgrade`
 - Setting up Root user access (Needed for running any scripts)
   - Install git: `pkg install git -y`
-  - Close root-termux repo and give all permissions: `git clone https://github.com/hctilg/root-termux.git && cd root-termux && chmod +x *`
+  - Clone root-termux repo and give all permissions: `git clone https://github.com/hctilg/root-termux.git && cd root-termux && chmod +x *`
   - Install wget and proot: `pkg install wget proot -y`
   - Run bash script to install root-access: `yes | bash install.sh`
   - start the root environment: `bash start.sh`
@@ -17,7 +17,7 @@
   - Install python for downloading ChromaDB: `apt install python3`
   - Install pip for downloading python libraries: `apt install python3-pip`
   - Install ChromaDB: `pip install chromadb`
-  - Check if chroma is starting: `chroma run`, probably it will fail to start with error: `Name or service not know`
+  - Check if chroma is starting: `chroma run`, probably it will fail to start with error: `Name or service not known`
   - Skip below steps if chroma starts successfully, otherwise this error is due to the missing hostname in /etc/hosts, so lets append it.
   - Install sudo: `apt install sudo`
   - Add localhost to /etc/hosts: `echo "127.0.0.1 $HOSTNAME" | sudo tee -a /etc/hosts`
